@@ -10,6 +10,9 @@ import javax.swing.JFrame;
 /**
  *
  * @author kmne6
+ * 
+ * Follows https://www.youtube.com/watch?v=E4wknt-cAfA
+ * Sprites from: Shy Guy Kingdom tsgk.captain.net/index.php?p=sheetinfo&t=513
  */
 public class Game {
   

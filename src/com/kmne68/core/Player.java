@@ -7,6 +7,10 @@ package com.kmne68.core;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.image.*;
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
+import java.io.File;
 
 /**
  *
@@ -41,13 +45,21 @@ public class Player {
   private boolean bottomLeft;
   private boolean bottomRight;
   
+  private Animation animation;
+  private BufferedImage[] idleSprites;
+  private BufferedImage[] walkingSprites;
+  private BufferedImage[] jumpingSprites;
+  private BufferedImage[] fallingSprites;
+  
+  private boolean facingLeft;
+  
   
   public Player(TileMap tileMap) {
     
     this.tileMap = tileMap;
     
-    width = 20;
-    height = 20;
+    width = 22;
+    height = 22;
     
     moveSpeed = 0.6;
     maxSpeed = 4.2;
@@ -55,6 +67,33 @@ public class Player {
     stopSpeed = 0.30;
     jumpStart = -11.0;
     gravity = 0.64;
+    
+    
+    try {
+      idleSprites = new BufferedImage[1];
+      walkingSprites = new BufferedImage[6];
+      jumpingSprites = new BufferedImage[1];
+      fallingSprites = new BufferedImage[1];
+      
+      idleSprites[0] = ImageIO.read(new File("C:\\Users\\kmne6\\Documents\\NetBeansProjects\\Game\\src\\com\\kmne68\\core\\resources\\kirbyidle.gif"));
+      jumpingSprites[0] = ImageIO.read(new File("C:\\Users\\kmne6\\Documents\\NetBeansProjects\\Game\\src\\com\\kmne68\\core\\resources\\kirbyjump.gif"));
+      fallingSprites[0] = ImageIO.read(new File("C:\\Users\\kmne6\\Documents\\NetBeansProjects\\Game\\src\\com\\kmne68\\core\\resources\\kirbyfall.gif"));
+      
+      BufferedImage image = ImageIO.read(new File("C:\\Users\\kmne6\\Documents\\NetBeansProjects\\Game\\src\\com\\kmne68\\core\\resources\\kirbywalk.gif"));
+      for(int i = 0; i < walkingSprites.length; i++) {
+        walkingSprites[i] = image.getSubimage(
+                                              i * width + i,
+                                              0,
+                                              width,
+                                              height);
+      }
+    }
+    catch(Exception e) {
+      e.printStackTrace();
+    }
+    
+    animation = new Animation();
+    facingLeft = false;
     
   }
   
@@ -219,6 +258,39 @@ public class Player {
     
     x = tempX;
     y = tempY;
+    
+    // move the map
+    tileMap.setX((int) (GamePanel.WIDTH / 2 - x ));
+    tileMap.setY((int) (GamePanel.HEIGHT / 2 - y ));
+    
+    // sprite animation
+    if(left || right) {
+      animation.setFrames(walkingSprites);
+      animation.setDelay(100);
+    }
+    else {
+      animation.setFrames(idleSprites);
+      animation.setDelay(-1);
+    }
+    
+    if(dY < 0) {
+      animation.setFrames(jumpingSprites);
+      animation.setDelay(-1);
+    }
+    if(dY > 0) {
+      animation.setFrames(fallingSprites);
+      animation.setDelay(-1);
+    }
+    
+    animation.update();
+    
+    if(dX < 0) {
+      facingLeft = true;
+    }
+    if(dX > 0) {
+      facingLeft = false;
+    }
+    
   }
   
   
@@ -227,13 +299,38 @@ public class Player {
     int tileMapX = tileMap.getX();
     int tileMapY = tileMap.getY();
     
-    g.setColor(Color.RED);
-    g.fillRect(
-      (int) (tileMapX + x - width / 2 ),
-      (int) (tileMapY + y - height / 2 ),
-      width,
-      height 
-    );
+    if(facingLeft) {
+      g.drawImage(
+                  animation.getImage(),
+                  (int) (tileMapX + x - width / 2),
+                  (int) (tileMapY + y - height / 2),
+                  null
+                  );
+    }
+    else {
+      g.drawImage(
+                  animation.getImage(),
+                  (int) (tileMapX + x - width / 2 + width ),
+                  (int) (tileMapY + y - height / 2 ),
+                  -width,
+                  height,
+                  null
+                  );
+    }
+      
+      
+      
+    /*
+    * The code below was used in set up. Retained for testing feature
+    * additions later
+    */
+//    g.setColor(Color.RED);
+//    g.fillRect(
+//      (int) (tileMapX + x - width / 2 ),
+//      (int) (tileMapY + y - height / 2 ),
+//      width,
+//      height 
+//    );
     
   }
   
