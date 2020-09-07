@@ -18,13 +18,13 @@ import java.io.File;
  */
 public class Player {
   
-  private double x;
-  private double y;
-  private double dX;
-  private double dY;
+  private double currentX;
+  private double currentY;
+  private double destinationX;
+  private double destinationY;
   
-  private int width;
-  private int height;
+  private int playerWidth;
+  private int playerHeight;
   
   private boolean left;
   private boolean right;
@@ -58,8 +58,8 @@ public class Player {
     
     this.tileMap = tileMap;
     
-    width = 22;
-    height = 22;
+    playerWidth = 22;
+    playerHeight = 22;
     
     moveSpeed = 0.6;
     maxSpeed = 4.2;
@@ -81,11 +81,10 @@ public class Player {
       
       BufferedImage image = ImageIO.read(new File("C:\\Users\\kmne6\\Documents\\NetBeansProjects\\Game\\src\\com\\kmne68\\core\\resources\\kirbywalk.gif"));
       for(int i = 0; i < walkingSprites.length; i++) {
-        walkingSprites[i] = image.getSubimage(
-                                              i * width + i,
+        walkingSprites[i] = image.getSubimage(i * playerWidth + i,
                                               0,
-                                              width,
-                                              height);
+                                              playerWidth,
+                                              playerHeight);
       }
     }
     catch(Exception e) {
@@ -98,11 +97,11 @@ public class Player {
   }
   
   public void setX(int x ) {
-    this.x = x;
+    this.currentX = x;
   }
   
   public void setY(int y) {
-    this.y = y;
+    this.currentY = y;
   }
   
   public void setLeft(boolean b){
@@ -125,10 +124,10 @@ public class Player {
   
   private void calculateCorners(double x, double y) {
     
-    int leftTile = tileMap.getColumnTile( (int) (x - width / 2 ) );
-    int rightTile = tileMap.getColumnTile( (int) (x + width / 2 ) - 1 );
-    int topTile = tileMap.getRowTile( (int) ( y - height / 2 ) );
-    int bottomTile = tileMap.getRowTile( (int) ( y + height / 2 ) - 1 );
+    int leftTile = tileMap.getColumnTile((int) (x - playerWidth / 2 ) );
+    int rightTile = tileMap.getColumnTile((int) (x + playerWidth / 2 ) - 1 );
+    int topTile = tileMap.getRowTile((int) ( y - playerHeight / 2 ) );
+    int bottomTile = tileMap.getRowTile((int) ( y + playerHeight / 2 ) - 1 );
     
     /*
     * The following code was used to access tiles but was replaced by the
@@ -152,116 +151,116 @@ public class Player {
     
     // determine next position
     if(left) {
-      dX -= moveSpeed;
-      if(dX < -maxSpeed) {
-        dX = -maxSpeed;
+      destinationX -= moveSpeed;
+      if(destinationX < -maxSpeed) {
+        destinationX = -maxSpeed;
       }
     }
     else if(right) {
-      dX += moveSpeed;
-      if(dX > maxSpeed) {
-        dX = maxSpeed;
+      destinationX += moveSpeed;
+      if(destinationX > maxSpeed) {
+        destinationX = maxSpeed;
       }
     }
     else {
-      if(dX > 0) {
-        dX -= stopSpeed;
-        if(dX < 0) {
-          dX = 0;
+      if(destinationX > 0) {
+        destinationX -= stopSpeed;
+        if(destinationX < 0) {
+          destinationX = 0;
         }
       }
-      else if(dX < 0) {
-        dX += stopSpeed;
-        if(dX > 0) {
-          dX = 0;
+      else if(destinationX < 0) {
+        destinationX += stopSpeed;
+        if(destinationX > 0) {
+          destinationX = 0;
         }
       }
     }
     
     if(jumping) {
-      dY = jumpStart;
+      destinationY = jumpStart;
       falling = true;
       jumping = false;
     }
     
     if(falling) {
-      dY += gravity;
-      if(dY > maxFallingSpeed) {
-        dY = maxFallingSpeed;
+      destinationY += gravity;
+      if(destinationY > maxFallingSpeed) {
+        destinationY = maxFallingSpeed;
       }
     }
     else {
-      dY = 0;
+      destinationY = 0;
     }
     
     // check collisions
-    int currentColumn = tileMap.getColumnTile( (int) x);
-    int currentRow = tileMap.getRowTile( (int) y);
+    int currentColumn = tileMap.getColumnTile((int) currentX);
+    int currentRow = tileMap.getRowTile((int) currentY);
     
-    double toX = x + dX;
-    double toY = y + dY;
+    double toX = currentX + destinationX;
+    double toY = currentY + destinationY;
     
-    double tempX = x;
-    double tempY = y;
+    double tempX = currentX;
+    double tempY = currentY;
     
-    calculateCorners(x, toY);
+    calculateCorners(currentX, toY);
     
-    if(dY < 0) {
+    if(destinationY < 0) {
       if(topLeft || topRight) {
-        dY = 0;
-        tempY = currentRow * tileMap.getTileSize() + height / 2;
+        destinationY = 0;
+        tempY = currentRow * tileMap.getTileSize() + playerHeight / 2;
       }
       else {
-        tempY += dY;
+        tempY += destinationY;
       }
     }
     
-    if(dY > 0) {
+    if(destinationY > 0) {
       if(bottomLeft || bottomRight) {
-        dY = 0;
+        destinationY = 0;
         falling = false;
-        tempY = (currentRow + 1) * tileMap.getTileSize() - height / 2;
+        tempY = (currentRow + 1) * tileMap.getTileSize() - playerHeight / 2;
       }
       else {
-        tempY += dY;
+        tempY += destinationY;
       }
     }
     
-    calculateCorners(toX, y);
+    calculateCorners(toX, currentY);
     
-    if(dX < 0) {
+    if(destinationX < 0) {
       if(topLeft || bottomLeft) {
-        dX = 0;
-        tempX = currentColumn * tileMap.getTileSize() + width / 2;
+        destinationX = 0;
+        tempX = currentColumn * tileMap.getTileSize() + playerWidth / 2;
       }
       else {
-        tempX += dX;
+        tempX += destinationX;
       }
     }
     
-    if(dX > 0) {
+    if(destinationX > 0) {
       if(topRight || bottomRight) {
-        dX = 0;
-        tempX = (currentColumn + 1) * tileMap.getTileSize() - width / 2;
+        destinationX = 0;
+        tempX = (currentColumn + 1) * tileMap.getTileSize() - playerWidth / 2;
       }
       else {
-        tempX += dX;
+        tempX += destinationX;
       }
     }
     
     if(!falling) {
-      calculateCorners(x, y + 1);
+      calculateCorners(currentX, currentY + 1);
       if(!bottomLeft && !bottomRight) {
         falling = true;
       }
     }
     
-    x = tempX;
-    y = tempY;
+    currentX = tempX;
+    currentY = tempY;
     
     // move the map
-    tileMap.setX((int) (GamePanel.WIDTH / 2 - x ));
-    tileMap.setY((int) (GamePanel.HEIGHT / 2 - y ));
+    tileMap.setX((int) (GamePanel.WIDTH / 2 - currentX ));
+    tileMap.setY((int) (GamePanel.HEIGHT / 2 - currentY ));
     
     // sprite animation
     if(left || right) {
@@ -273,21 +272,21 @@ public class Player {
       animation.setDelay(-1);
     }
     
-    if(dY < 0) {
+    if(destinationY < 0) {
       animation.setFrames(jumpingSprites);
       animation.setDelay(-1);
     }
-    if(dY > 0) {
+    if(destinationY > 0) {
       animation.setFrames(fallingSprites);
       animation.setDelay(-1);
     }
     
     animation.update();
     
-    if(dX < 0) {
+    if(destinationX < 0) {
       facingLeft = true;
     }
-    if(dX > 0) {
+    if(destinationX > 0) {
       facingLeft = false;
     }
     
@@ -300,20 +299,18 @@ public class Player {
     int tileMapY = tileMap.getY();
     
     if(facingLeft) {
-      g.drawImage(
-                  animation.getImage(),
-                  (int) (tileMapX + x - width / 2),
-                  (int) (tileMapY + y - height / 2),
+      g.drawImage(animation.getImage(),
+                  (int) (tileMapX + currentX - playerWidth / 2),
+                  (int) (tileMapY + currentY - playerHeight / 2),
                   null
                   );
     }
     else {
-      g.drawImage(
-                  animation.getImage(),
-                  (int) (tileMapX + x - width / 2 + width ),
-                  (int) (tileMapY + y - height / 2 ),
-                  -width,
-                  height,
+      g.drawImage(animation.getImage(),
+                  (int) (tileMapX + currentX - playerWidth / 2 + playerWidth ),
+                  (int) (tileMapY + currentY - playerHeight / 2 ),
+                  -playerWidth,
+                  playerHeight,
                   null
                   );
     }

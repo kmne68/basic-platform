@@ -14,12 +14,12 @@ import java.awt.image.BufferedImage;
 public class Tile {
   
   private BufferedImage image;
-  private boolean blocked;
+  private boolean isBlocked;
   
-  public Tile(BufferedImage image, boolean blocked) {
+  public Tile(BufferedImage image, boolean isBlocked) {
     
     this.image = image;
-    this.blocked = blocked;
+    this.isBlocked = isBlocked;
     
   }
   
@@ -30,7 +30,7 @@ public class Tile {
   
   
   public boolean isBlocked() {
-    return blocked;
+    return isBlocked;
   }
   
 }

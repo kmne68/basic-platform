@@ -20,10 +20,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
   public static final int HEIGHT  = 480;
   
   private Thread thread;
-  private boolean running;
+  private boolean isRunning;
   
-  private BufferedImage image;
-  private Graphics2D g;
+  private BufferedImage tileImage;
+  private Graphics2D graphicContext;
   
   private int FPS = 30;
   private int targetTime = 1000 / FPS;
@@ -58,7 +58,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     long urdTime;   // update render draw?
     long waitTime;
     
-    while(running) {
+    while(isRunning) {
       
       startTime = System.nanoTime();
       
@@ -81,10 +81,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
   
   private void init() {
     
-    running = true;
+    isRunning = true;
     
-    image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-    g = (Graphics2D) image.getGraphics();
+    tileImage = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+    graphicContext = (Graphics2D) tileImage.getGraphics();
     
     //tileMap = new TileMap("C:\\Users\\kmne6\\Documents\\NetBeansProjects\\Game\\src\\com\\kmne68\\core\\map.txt", 32);
     //tileMap = new TileMap("C:\\Users\\kmne6\\Documents\\NetBeansProjects\\Game\\src\\com\\kmne68\\core\\resources\\testmap.txt", 32);
@@ -110,18 +110,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
   
   private void render() {
     // clear screen by drawing a black rectangle
-    g.setColor(Color.BLACK);
-    g.fillRect(0, 0, WIDTH, HEIGHT);
+    graphicContext.setColor(Color.BLACK);
+    graphicContext.fillRect(0, 0, WIDTH, HEIGHT);
     
-    tileMap.draw(g);
-    player.draw(g);
+    tileMap.draw(graphicContext);
+    player.draw(graphicContext);
     
   }
   
   private void draw() {
     
     Graphics g2 = getGraphics();
-    g2.drawImage(image, 0, 0, null);
+    g2.drawImage(tileImage, 0, 0, null);
     g2.dispose();
   }
   

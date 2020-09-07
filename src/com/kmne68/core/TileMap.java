@@ -27,10 +27,10 @@ public class TileMap {
   private BufferedImage tileset;
   private Tile[][] tiles;
   
-  private int minX;
-  private int minY;
-  private int maxX = 0;
-  private int maxY = 0;
+  private int minX = 0;
+  private int minY = 0;
+  private int maxX;
+  private int maxY;
   
   
   public TileMap(String tileMap, int tileSize) {
@@ -65,10 +65,10 @@ public class TileMap {
   }
   
   
-  public void loadTiles(String s) {
+  public void loadTiles(String tileFile) {
     
     try {
-      tileset = ImageIO.read(new File(s));
+      tileset = ImageIO.read(new File(tileFile));
       int numTilesAcross = (tileset.getWidth() + 1) / (tileSize + 1); // +1 accounts for one pixel border between tiles
       tiles = new Tile[2][numTilesAcross];
       
@@ -100,12 +100,12 @@ public class TileMap {
   public int getX() { return x; }
   public int getY() { return y; }
   
-  public int getColumnTile(int x) {
-    return x / tileSize;
+  public int getColumnTile(int tileX) {
+    return tileX / tileSize;
   }
   
-  public int getRowTile(int y) {
-    return y / tileSize;
+  public int getRowTile(int tileY) {
+    return tileY / tileSize;
   }
   
   public int getTile(int row, int column) {
