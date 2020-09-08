@@ -16,8 +16,8 @@ import java.awt.event.*;
  */
 public class GamePanel extends JPanel implements Runnable, KeyListener {
   
-  public static final int WIDTH   = 640;
-  public static final int HEIGHT  = 480;
+  public static final int WIDTH   = 1500;
+  public static final int HEIGHT  = 1000;
   
   private Thread thread;
   private boolean isRunning;
@@ -136,14 +136,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     
     if(code == KeyEvent.VK_LEFT) {
       System.out.println("left from gp");
-      player.setLeft(true);
+      player.isMovingLeft(true);
     }
     if(code == KeyEvent.VK_RIGHT) {
       System.out.println("right from gp");
-      player.setRight(true);
+      player.isMovingRight(true);
     }
     if(code == KeyEvent.VK_W)
-      player.setJumping(true);
+      player.setIsJumping(true);
   }
   
   public void keyReleased(KeyEvent key) {
@@ -151,10 +151,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
     int code = key.getKeyCode();
     
     if(code == KeyEvent.VK_LEFT) {
-      player.setLeft(false);
+      player.isMovingLeft(false);
     }
     if(code == KeyEvent.VK_RIGHT) {
-      player.setRight(false);
+      player.isMovingRight(false);
     }
   }
   

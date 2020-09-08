@@ -26,10 +26,10 @@ public class Player {
   private int playerWidth;
   private int playerHeight;
   
-  private boolean left;
-  private boolean right;
-  private boolean jumping;
-  private boolean falling;
+  private boolean isMovingLeft;
+  private boolean isMovingRight;
+  private boolean isJumping;
+  private boolean isFalling;
   
   private double moveSpeed;
   private double maxSpeed;
@@ -40,10 +40,10 @@ public class Player {
   
   private TileMap tileMap;
   
-  private boolean topLeft;
-  private boolean topRight;
-  private boolean bottomLeft;
-  private boolean bottomRight;
+  private boolean isTopLeft;
+  private boolean isTopRight;
+  private boolean isBottomLeft;
+  private boolean isBottomRight;
   
   private Animation animation;
   private BufferedImage[] idleSprites;
@@ -51,7 +51,7 @@ public class Player {
   private BufferedImage[] jumpingSprites;
   private BufferedImage[] fallingSprites;
   
-  private boolean facingLeft;
+  private boolean isFacingLeft;
   
   
   public Player(TileMap tileMap) {
@@ -92,7 +92,7 @@ public class Player {
     }
     
     animation = new Animation();
-    facingLeft = false;
+    isFacingLeft = false;
     
   }
   
@@ -104,30 +104,30 @@ public class Player {
     this.currentY = y;
   }
   
-  public void setLeft(boolean b){
+  public void isMovingLeft(boolean b){
     
-    this.left = b;
-    System.out.println("left = " + left);
+    this.isMovingLeft = b;
+    System.out.println("left = " + isMovingLeft);
   }
   
-  public void setRight(boolean b) {
+  public void isMovingRight(boolean b) {
     
-    this.right = b;
-    System.out.println("right = " + right);
+    this.isMovingRight = b;
+    System.out.println("right = " + isMovingRight);
   }
   
-  public void setJumping(boolean b) {
-    if(!falling)
-      this.jumping = true;
+  public void setIsJumping(boolean b) {
+    if(!isFalling)
+      this.isJumping = true;
   }
   
   
-  private void calculateCorners(double x, double y) {
+  private void calculateCorners(double targetX, double targetY) {
     
-    int leftTile = tileMap.getColumnTile((int) (x - playerWidth / 2 ) );
-    int rightTile = tileMap.getColumnTile((int) (x + playerWidth / 2 ) - 1 );
-    int topTile = tileMap.getRowTile((int) ( y - playerHeight / 2 ) );
-    int bottomTile = tileMap.getRowTile((int) ( y + playerHeight / 2 ) - 1 );
+    int leftTile = tileMap.getColumnTile((int) (targetX - playerWidth / 2 ) );
+    int rightTile = tileMap.getColumnTile((int) (targetX + playerWidth / 2 ) - 1 );
+    int topTile = tileMap.getRowTile((int) ( targetY - playerHeight / 2 ) );
+    int bottomTile = tileMap.getRowTile((int) ( targetY + playerHeight / 2 ) - 1 );
     
     /*
     * The following code was used to access tiles but was replaced by the
@@ -138,10 +138,10 @@ public class Player {
 //    bottomLeft = tileMap.getTile(bottomTile, leftTile) == 0;
 //    bottomRight = tileMap.getTile(bottomTile, rightTile) == 0;
     
-    topLeft = tileMap.isBlocked(topTile, leftTile);
-    topRight = tileMap.isBlocked(topTile, rightTile);
-    bottomLeft = tileMap.isBlocked(bottomTile, leftTile);
-    bottomRight = tileMap.isBlocked(bottomTile, rightTile);
+    isTopLeft = tileMap.isBlocked(topTile, leftTile);
+    isTopRight = tileMap.isBlocked(topTile, rightTile);
+    isBottomLeft = tileMap.isBlocked(bottomTile, leftTile);
+    isBottomRight = tileMap.isBlocked(bottomTile, rightTile);
     
   }
   
@@ -150,13 +150,13 @@ public class Player {
   public void update() {
     
     // determine next position
-    if(left) {
+    if(isMovingLeft) {
       destinationX -= moveSpeed;
       if(destinationX < -maxSpeed) {
         destinationX = -maxSpeed;
       }
     }
-    else if(right) {
+    else if(isMovingRight) {
       destinationX += moveSpeed;
       if(destinationX > maxSpeed) {
         destinationX = maxSpeed;
@@ -177,13 +177,13 @@ public class Player {
       }
     }
     
-    if(jumping) {
+    if(isJumping) {
       destinationY = jumpStart;
-      falling = true;
-      jumping = false;
+      isFalling = true;
+      isJumping = false;
     }
     
-    if(falling) {
+    if(isFalling) {
       destinationY += gravity;
       if(destinationY > maxFallingSpeed) {
         destinationY = maxFallingSpeed;
@@ -206,7 +206,7 @@ public class Player {
     calculateCorners(currentX, toY);
     
     if(destinationY < 0) {
-      if(topLeft || topRight) {
+      if(isTopLeft || isTopRight) {
         destinationY = 0;
         tempY = currentRow * tileMap.getTileSize() + playerHeight / 2;
       }
@@ -216,9 +216,9 @@ public class Player {
     }
     
     if(destinationY > 0) {
-      if(bottomLeft || bottomRight) {
+      if(isBottomLeft || isBottomRight) {
         destinationY = 0;
-        falling = false;
+        isFalling = false;
         tempY = (currentRow + 1) * tileMap.getTileSize() - playerHeight / 2;
       }
       else {
@@ -229,7 +229,7 @@ public class Player {
     calculateCorners(toX, currentY);
     
     if(destinationX < 0) {
-      if(topLeft || bottomLeft) {
+      if(isTopLeft || isBottomLeft) {
         destinationX = 0;
         tempX = currentColumn * tileMap.getTileSize() + playerWidth / 2;
       }
@@ -239,7 +239,7 @@ public class Player {
     }
     
     if(destinationX > 0) {
-      if(topRight || bottomRight) {
+      if(isTopRight || isBottomRight) {
         destinationX = 0;
         tempX = (currentColumn + 1) * tileMap.getTileSize() - playerWidth / 2;
       }
@@ -248,10 +248,10 @@ public class Player {
       }
     }
     
-    if(!falling) {
+    if(!isFalling) {
       calculateCorners(currentX, currentY + 1);
-      if(!bottomLeft && !bottomRight) {
-        falling = true;
+      if(!isBottomLeft && !isBottomRight) {
+        isFalling = true;
       }
     }
     
@@ -263,7 +263,7 @@ public class Player {
     tileMap.setY((int) (GamePanel.HEIGHT / 2 - currentY ));
     
     // sprite animation
-    if(left || right) {
+    if(isMovingLeft || isMovingRight) {
       animation.setFrames(walkingSprites);
       animation.setDelay(100);
     }
@@ -284,10 +284,10 @@ public class Player {
     animation.update();
     
     if(destinationX < 0) {
-      facingLeft = true;
+      isFacingLeft = true;
     }
     if(destinationX > 0) {
-      facingLeft = false;
+      isFacingLeft = false;
     }
     
   }
@@ -298,7 +298,7 @@ public class Player {
     int tileMapX = tileMap.getX();
     int tileMapY = tileMap.getY();
     
-    if(facingLeft) {
+    if(isFacingLeft) {
       g.drawImage(animation.getImage(),
                   (int) (tileMapX + currentX - playerWidth / 2),
                   (int) (tileMapY + currentY - playerHeight / 2),

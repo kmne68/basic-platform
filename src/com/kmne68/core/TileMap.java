@@ -97,18 +97,29 @@ public class TileMap {
   }
   
   
-  public int getX() { return x; }
-  public int getY() { return y; }
+  public int getX() { 
+    System.out.println("TileMap.getX() = " + x);
+    return x; 
+  }
+  
+  
+  public int getY() {
+    System.out.println("TileMap.getY() = " + y);
+    return y;
+  }
   
   public int getColumnTile(int tileX) {
+    System.out.println("TileMap.getColumnTile(x) = " + x + ", returns = " + tileX / tileSize);
     return tileX / tileSize;
   }
   
   public int getRowTile(int tileY) {
+    System.out.println("TileMap.getRowTile(y) = " + y + ", returns = " + tileY / tileSize);
     return tileY / tileSize;
   }
   
   public int getTile(int row, int column) {
+    System.out.println("TileMap.getTile(row, column) = " + map[row][column]);
     return map[row][column];
   }
   
